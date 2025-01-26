@@ -57,11 +57,11 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          heroku git:remote -a YOUR_HEROKU_APP_NAME
+          heroku git:remote -a CICD_EXAMPLE
           git push heroku HEAD:main
 
       # Step 9: Confirm Deployment
       - name: Confirm Deployment
         run: |
           echo "Deployment started successfully. Checking app status..."
-          heroku apps:info -a YOUR_HEROKU_APP_NAME
+          heroku apps:info -a CICD_EXAMPLE
