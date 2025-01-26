@@ -29,10 +29,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run unit tests with detailed verbosity
+      # Step 4: Run unit tests
       - name: Run unit tests
         run: |
-          pytest -v --maxfail=1 --disable-warnings
+          pytest --disable-warnings -v
 
       # Step 5: Install Heroku CLI
       - name: Install Heroku CLI
@@ -40,20 +40,28 @@ jobs:
           curl https://cli-assets.heroku.com/install.sh | sh
           echo 'Heroku CLI installed.'
 
-      # Step 6: Log in to Heroku
+      # Step 6: Debug Heroku CLI
+      - name: Debug Heroku CLI
+        run: |
+          heroku version
+          echo "HEROKU_API_KEY is set to: ${HEROKU_API_KEY}"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      # Step 7: Log in to Heroku
       - name: Log in to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           echo "Logging in to Heroku..."
-          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+          heroku auth:token
 
-      # Step 7: Verify Heroku login
+      # Step 8: Verify Heroku login
       - name: Verify Heroku login
         run: |
           heroku whoami
 
-      # Step 8: Deploy to Heroku
+      # Step 9: Deploy to Heroku
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
@@ -61,7 +69,7 @@ jobs:
           heroku git:remote -a CICD_EXAMPLE
           git push heroku HEAD:main
 
-      # Step 9: Deployment Confirmation
+      # Step 10: Deployment Confirmation
       - name: Confirm Deployment
         run: |
           echo "Deployment started successfully. Checking app status..."
