@@ -37,10 +37,9 @@ jobs:
 
       # Step 5: Log in to Heroku
       - name: Log in to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          echo $HEROKU_API_KEY | heroku auth:token
+          echo "Logging in to Heroku..."
+          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
 
       # Step 6: Verify Heroku login
       - name: Verify Heroku login
@@ -49,8 +48,6 @@ jobs:
 
       # Step 7: Deploy to Heroku
       - name: Deploy to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           heroku git:remote -a CICD_EXAMPLE
           git push heroku HEAD:main
