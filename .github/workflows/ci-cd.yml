@@ -38,39 +38,30 @@ jobs:
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
-          echo 'Heroku CLI installed.'
 
-      # Step 6: Debug Heroku CLI
-      - name: Debug Heroku CLI
-        run: |
-          heroku version
-          echo "HEROKU_API_KEY is set to: ${HEROKU_API_KEY}"
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-
-      # Step 7: Log in to Heroku
-      - name: Log in to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      # Step 6: Authenticate Heroku CLI
+      - name: Authenticate with Heroku
         run: |
           echo "Logging in to Heroku..."
-          heroku auth:token
+          echo "$HEROKU_API_KEY" | heroku auth:token
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
-      # Step 8: Verify Heroku login
+      # Step 7: Verify Heroku login
       - name: Verify Heroku login
         run: |
-          heroku whoami
+          heroku auth:whoami
 
-      # Step 9: Deploy to Heroku
+      # Step 8: Deploy to Heroku
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          heroku git:remote -a CICD_EXAMPLE
+          heroku git:remote -a YOUR_HEROKU_APP_NAME
           git push heroku HEAD:main
 
-      # Step 10: Deployment Confirmation
+      # Step 9: Confirm Deployment
       - name: Confirm Deployment
         run: |
           echo "Deployment started successfully. Checking app status..."
-          heroku apps:info -a CICD_EXAMPLE
+          heroku apps:info -a YOUR_HEROKU_APP_NAME
