@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -33,25 +33,22 @@ jobs:
       - name: Run unit tests
         run: pytest -v
 
-      # Step 5: Install Heroku CLI
-      - name: Install Heroku CLI
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-          heroku --version  # Verifies installation
-
-      # Step 6: Log in to Heroku
+      # Step 5: Log in to Heroku
       - name: Log in to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           echo $HEROKU_API_KEY | heroku auth:token
 
-      # Step 7: Set Heroku remote
-      - name: Set Heroku remote
+      # Step 6: Verify Heroku login
+      - name: Verify Heroku login
+        run: |
+          heroku whoami
+
+      # Step 7: Deploy to Heroku
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           heroku git:remote -a CICD_EXAMPLE
-
-      # Step 8: Push code to Heroku
-      - name: Deploy to Heroku
-        run: |
           git push heroku HEAD:main
