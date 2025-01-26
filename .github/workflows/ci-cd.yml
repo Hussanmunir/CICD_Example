@@ -33,12 +33,25 @@ jobs:
       - name: Run unit tests
         run: pytest -v
 
-      # Step 5: Deploy to Heroku
-      - name: Deploy to Heroku
+      # Step 5: Install Heroku CLI
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          heroku --version  # Verifies installation
+
+      # Step 6: Log in to Heroku
+      - name: Log in to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
           echo $HEROKU_API_KEY | heroku auth:token
+
+      # Step 7: Set Heroku remote
+      - name: Set Heroku remote
+        run: |
           heroku git:remote -a CICD_EXAMPLE
+
+      # Step 8: Push code to Heroku
+      - name: Deploy to Heroku
+        run: |
           git push heroku HEAD:main
