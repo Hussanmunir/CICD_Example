@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     # This is the response when accessing the root URL
-    return "Hello, Heroku CI/CD!"
+    return "Hello, Welcome to my CI/CD Pipeline!"
 
 # Check if the script is run directly
 if __name__ == "__main__":
