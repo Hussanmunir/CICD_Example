@@ -21,6 +21,6 @@ def test_home():
     # Check if the response status is 200 (OK)
     assert response.status_code == 200
     # Check if the response data is correct
-    assert response.data == b"Hello, Heroku CI/CD!"
+    assert response.data == b"Hello, Welcome to my CI/CD Pipeline!"
 
 # pytest -v -p no:warnings
