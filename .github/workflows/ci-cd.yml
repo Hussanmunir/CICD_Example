@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Simple CI/CD Pipeline
 
 on:
   push:
@@ -11,6 +11,9 @@ on:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
     steps:
       # Step 1: Checkout the code
@@ -32,4 +35,31 @@ jobs:
       # Step 4: Run unit tests
       - name: Run unit tests
         run: |
-          pytest --maxfail=1 --disable-warnings -v
+          pytest --disable-warnings -v
+
+      # Step 5: Install Heroku CLI
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      # Step 6: Authenticate with Heroku
+      - name: Authenticate with Heroku
+        run: |
+          echo "machine api.heroku.com" > ~/.netrc
+          echo "  login $HEROKU_EMAIL" >> ~/.netrc
+          echo "  password $HEROKU_API_KEY" >> ~/.netrc
+          echo "machine git.heroku.com" >> ~/.netrc
+          echo "  login $HEROKU_EMAIL" >> ~/.netrc
+          echo "  password $HEROKU_API_KEY" >> ~/.netrc
+
+      # Step 7: Deploy to Heroku
+      - name: Deploy to Heroku
+        run: |
+          heroku git:remote -a CICD_example
+          git push heroku HEAD:main
+
+      # Step 8: Confirm Deployment
+      - name: Confirm Deployment
+        run: |
+          echo "Deployment started successfully. Checking app status..."
+          heroku apps:info -a CICD_example
