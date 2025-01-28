@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
 
 # C extensions
 *.so
@@ -92,6 +94,10 @@ ENV/
 env.bak/
 venv.bak/
 
+# Pipenv
+Pipfile
+Pipfile.lock
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -112,3 +118,12 @@ dmypy.json
 
 # VS Code
 .vscode/
+
+# JetBrains IDEs
+.idea/
+
+# macOS Finder metadata
+.DS_Store
+
+# Windows image cache files
+Thumbs.db
