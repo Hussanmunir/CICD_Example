@@ -1,20 +1,17 @@
-name: Simple CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  test-and-deploy:
+  test:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    env:
-      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -37,12 +34,34 @@ jobs:
         run: |
           pytest --disable-warnings -v
 
-      # Step 5: Install Heroku CLI
+      # Step 5: Success message
+      - name: All tests passed
+        if: success()
+        run: echo "All test cases ran successfully!"
+
+      # Step 6: Failure message
+      - name: Tests failed
+        if: failure()
+        run: echo "Some test cases failed. Please check the logs."
+
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install Heroku CLI
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      # Step 6: Authenticate with Heroku
+      # Step 3: Authenticate with Heroku
       - name: Authenticate with Heroku
         run: |
           echo "machine api.heroku.com" > ~/.netrc
@@ -52,14 +71,25 @@ jobs:
           echo "  login $HEROKU_EMAIL" >> ~/.netrc
           echo "  password $HEROKU_API_KEY" >> ~/.netrc
 
-      # Step 7: Deploy to Heroku
+      # Step 4: Deploy to Heroku
       - name: Deploy to Heroku
         run: |
-          heroku git:remote -a CICD_example
+          heroku git:remote -a CICD_EXAMPLE
           git push heroku HEAD:main
 
-      # Step 8: Confirm Deployment
+      # Step 5: Confirm Deployment
       - name: Confirm Deployment
+        if: success()
         run: |
           echo "Deployment started successfully. Checking app status..."
-          heroku apps:info -a CICD_example
+          heroku apps:info -a CICD_EXAMPLE
+
+      # Step 6: Success message
+      - name: Deployment successful
+        if: success()
+        run: echo "Deployment completed successfully!"
+
+      # Step 7: Failure message
+      - name: Deployment failed
+        if: failure()
+        run: echo "Deployment failed. Please check the logs."
